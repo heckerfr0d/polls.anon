@@ -13,6 +13,8 @@
 
 # misc
 /backend/env
+/backend/polly/__pycache__
+/backend/__pycache__
 .DS_Store
 .env.local
 .env.development.local
