@@ -1,0 +1,3 @@
+CREATE TABLE users (id SERIAL PRIMARY KEY, username TEXT UNIQUE NOT NULL, password TEXT NOT NULL);
+CREATE TABLE polls (id SERIAL PRIMARY KEY, title TEXT, oid INTEGER REFERENCES users(id), created DATE, expire DATE);
+CREATE TABLE qns (id SERIAL PRIMARY KEY, pid INTEGER REFERENCES polls(id), qn TEXT, options TEXT[]);
