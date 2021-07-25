@@ -1,4 +1,4 @@
-from gitfitti import init_app
+from polly import init_app
 
 app = init_app()
 
