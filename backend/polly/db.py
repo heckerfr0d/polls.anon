@@ -74,14 +74,16 @@ def get_polls(username):
     cur.execute("SELECT id, title, created, expire FROM polls WHERE oid=(SELECT id FROM users WHERE username=%s)", (username,))
     polls = cur.fetchall()
     cur.close()
-    now = datetime.now()
     active = []
     expired = []
     for id, title, created, expire in polls:
-        if expire < now:
+        tz = created.tzinfo
+        if expire < datetime.now(tz):
             expired.append((id, title, created, expire))
         else:
             active.append((id, title, created, expire))
+    print(active)
+    print(expired)
     return {'active': active, 'expired': expired}
 
 def get_qns(username, id):
@@ -95,3 +97,16 @@ def get_qns(username, id):
     qns = cur.fetchall()
     cur.close()
     return {'id': poll[0], 'title': poll[1], 'created': poll[2], 'expire': poll[3], 'questions': [(qn, options) for qn, options in qns]}
+
+def create_poll(username, title, expire, qns):
+    db = get_db()
+    cur = db.cursor()
+    cur.execute("SELECT id FROM users WHERE username=%s", (username,))
+    oid = cur.fetchone()
+    cur.execute("INSERT INTO polls (oid, title, created, expire) VALUES (%s, %s, %s, %s)", (oid[0], title, datetime.now(), expire))
+    pid = cur.lastrowid
+    for qn, options in qns:
+        cur.execute("INSERT INTO qns (pid, qn, options) VALUES (%s, %s, %s)", (pid, qn, options))
+    db.commit()
+    cur.close()
+    return {'id': pid}
