@@ -71,42 +71,60 @@ def add_user(username, password):
 def get_polls(username):
     db = get_db()
     cur = db.cursor()
-    cur.execute("SELECT id, title, created, expire FROM polls WHERE oid=(SELECT id FROM users WHERE username=%s)", (username,))
+    cur.execute("SELECT id, qn, opts, expire FROM polls WHERE oid=(SELECT id FROM users WHERE username=%s)", (username,))
     polls = cur.fetchall()
     cur.close()
     active = []
     expired = []
-    for id, title, created, expire in polls:
-        tz = created.tzinfo
+    for id, qn, opts, expire in polls:
+        tz = expire.tzinfo
         if expire < datetime.now(tz):
-            expired.append((id, title, created, expire))
+            expired.append((id, qn, opts, expire))
         else:
-            active.append((id, title, created, expire))
+            active.append((id, qn, opts, expire))
     print(active)
     print(expired)
     return {'active': active, 'expired': expired}
 
-def get_qns(username, id):
+def get_qns(id):
     db = get_db()
     cur = db.cursor()
-    cur.execute("SELECT id, title, created, expire FROM polls WHERE oid=(SELECT id FROM users WHERE username=%s) AND id=%s", (username, id))
+    cur.execute("SELECT id, qn, opts, expire FROM polls WHERE id=%s", (id,))
     poll = cur.fetchone()
     if not poll:
         return {'error': 'poll not found'}
-    cur.execute("SELECT qn, options FROM qns WHERE oid=(SELECT id FROM users WHERE username=%s) AND pid=%s", (username, id))
-    qns = cur.fetchall()
+    # cur.execute("SELECT qn, options FROM qns WHERE oid=(SELECT id FROM users WHERE username=%s) AND pid=%s", (username, id))
+    # qns = cur.fetchall()
     cur.close()
-    return {'id': poll[0], 'title': poll[1], 'created': poll[2], 'expire': poll[3], 'questions': [(qn, options) for qn, options in qns]}
+    return {'id': poll[0], 'qn': poll[1], 'opts': poll[2], 'expire': poll[3]}#, 'questions': [(qn, options) for qn, options in qns]}
 
-def create_poll(username, title, expire, qns):
+def create_poll(username, qn, opts, expire):
     db = get_db()
     cur = db.cursor()
     cur.execute("SELECT id FROM users WHERE username=%s", (username,))
     oid = cur.fetchone()
-    cur.execute("INSERT INTO polls (oid, title, created, expire) VALUES (%s, %s, %s, %s)", (oid[0], title, datetime.now(), expire))
-    pid = cur.lastrowid
-    for qn, options in qns:
-        cur.execute("INSERT INTO qns (pid, qn, options) VALUES (%s, %s, %s)", (pid, qn, options))
+    print(oid, qn, opts, expire)
+    cur.execute("INSERT INTO polls (oid, qn, opts, expire) VALUES (%s, %s, %s, %s)", (oid[0], qn, opts, expire))
+    cur.execute("SELECT id FROM polls WHERE oid=%s AND qn=%s AND opts=%s AND expire=%s", (oid[0], qn, opts, expire))
+    pid = cur.fetchone()[0]
     db.commit()
     cur.close()
     return {'id': pid}
+
+def vote(id, opt):
+    db = get_db()
+    cur = db.cursor()
+    cur.execute("INSERT INTO votes (qnid, opt) values (%s, %s)", (id, opt))
+    db.commit()
+    cur.close()
+
+def view(username, id):
+    db = get_db()
+    cur = db.cursor()
+    cur.execute("SELECT qn, opts FROM polls WHERE id=%s AND oid=(SELECT id FROM users WHERE username=%s)", (id, username))
+    qn, opts = cur.fetchone()
+    cur.execute("SELECT COUNT(*) FROM votes WHERE qnid=%s AND opt=1", (id,))
+    one = cur.fetchone()[0]
+    cur.execute("SELECT COUNT(*) FROM votes WHERE qnid=%s AND opt=2", (id,))
+    two = cur.fetchone()[0]
+    return {'qn': qn, 'opts': opts, 'one': one, 'two': two}
