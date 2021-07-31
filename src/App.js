@@ -13,6 +13,7 @@ import Register from "./Register";
 import { useAuth, logout } from "./auth";
 import User from "./User";
 import Create from "./Create";
+import Vote from "./Vote";
 import './App.css';
 
 function App() {
@@ -20,9 +21,8 @@ function App() {
   const [showLogin, setShowLogin] = React.useState(false);
   const [create, showCreate] = React.useState(false);
   let home;
-  if(logged)
-  {
-    if(create)
+  if (logged) {
+    if (create)
       home = <Create />;
     else
       home = <User />;
@@ -33,7 +33,6 @@ function App() {
     home = <Register />;
   return (
     <Container>
-      <Router>
         <Navbar bg="light" variant="light" expand="sm">
           <Container>
             <Navbar.Brand href="/">
@@ -43,39 +42,26 @@ function App() {
             {!logged ?
               <Navbar.Collapse id="basic-navbar-nav" className="justify-content-end">
                 {!showLogin ?
-                <Nav.Link onClick={()=>setShowLogin(true)}>Login</Nav.Link> :
-                <Nav.Link onClick={()=>setShowLogin(false)}>Sign Up</Nav.Link> }
+                  <Nav.Link onClick={() => setShowLogin(true)}>Login</Nav.Link> :
+                  <Nav.Link onClick={() => setShowLogin(false)}>Sign Up</Nav.Link>}
               </Navbar.Collapse>
               : <Navbar.Collapse id="basic-navbar-nav" className="justify-content-end">
-                <Nav.Link onClick={()=>showCreate(true)} variant="success">New Poll</Nav.Link>
-                <Nav.Link onClick={()=>showCreate(false)}>My Polls</Nav.Link>
+                <Nav.Link onClick={() => showCreate(true)} variant="success">New Poll</Nav.Link>
+                <Nav.Link onClick={() => showCreate(false)}>My Polls</Nav.Link>
                 <Nav.Link onClick={logout}>Logout</Nav.Link>
               </Navbar.Collapse>}
           </Container>
         </Navbar>
-
+        <Router>
         <Switch>
-          <Route path="/login">
-            <Login />
+          <Route exact path="/">
+            {home}
           </Route>
-          <Route path="/register">
-            <Register />
-          </Route>
-          <Route path="/">
-                {home}
+          <Route path="/:id">
+            <Vote />
           </Route>
         </Switch>
       </Router>
-    </Container>
-  );
-}
-
-function Home() {
-  return (
-    <Container>
-      <Button>
-        Get Started
-      </Button>
     </Container>
   );
 }

@@ -16,11 +16,13 @@ function Register() {
 
     const onSubmitClick = (e) => {
         e.preventDefault()
+        if (message)
+            return;
         let opts = {
             'username': username,
             'password': password
         }
-        fetch('/api/register/', {
+        fetch('https://polls-anon.herokuapp.com/api/register/', {
             method: 'POST',
             headers: new Headers({
                 'Content-Type': 'application/json'

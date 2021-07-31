@@ -20,7 +20,7 @@ function Login() {
             'username': username,
             'password': password
         }
-        fetch('/api/login/', {
+        fetch('https://polls-anon.herokuapp.com/api/login/', {
             method: 'POST',
             headers: new Headers({
                 'Content-Type': 'application/json'

@@ -2,19 +2,24 @@ import React, { useEffect, useState } from "react";
 import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
 import Card from "react-bootstrap/Card";
+import Button from "react-bootstrap/Button";
+import Modal from "react-bootstrap/Modal";
+import ProgressBar from "react-bootstrap/ProgressBar";
+import { Link } from "react-router-dom";
 import { authFetch } from "./auth"
-import { CardGroup } from "react-bootstrap";
+import CardGroup from "react-bootstrap/CardGroup";
 
 function User() {
-    const [message, setMessage] = useState('')
-    const [active, setActive] = useState('')
-    const [expired, setExpired] = useState('')
+    const [id, setId] = useState('')
+    const [active, setActive] = useState([])
+    const [expired, setExpired] = useState([])
     const [tab, setTab] = useState(true)
+    const [data, setData] = useState({})
+    const [showModal, setShowModal] = useState(false)
     let acard, ecard;
     useEffect(() => {
-        authFetch("/api/polls").then(response => {
+        authFetch("https://polls-anon.herokuapp.com/api/polls/").then(response => {
             if (response.status === 401) {
-                setMessage("Sorry you aren't authorized!");
                 return null;
             }
             return response.json()
@@ -25,34 +30,66 @@ function User() {
             }
         })
     }, [])
-    acard = Array();
+    acard = [];
+    const view = (i, b) => {
+        console.log(i,  active.length);
+        if (b==='e')
+            setId(expired[i][0]);
+        else
+            setId(active[i][0]);
+        authFetch("https://polls-anon.herokuapp.com/api/view/" + id + "/").then(response => {
+            if (response.status === 401) {
+                return null;
+            }
+            return response.json()
+        }).then(response => {
+            if (response && response.qn) {
+                setData(
+                    {
+                        'link': "https://polls-anon.netlify.app/"+id+"/",
+                        'qn': response.qn,
+                        'opts': response.opts,
+                        'one': response.one,
+                        'two': response.two
+                    }
+                );
+                setShowModal(true);
+            }
+        })
+    }
     for (var i in active) {
+        let a = i;
         acard.push(
-            <Card onClick={() => console.log('noice')} style={{ width: '18rem' }}>
+            <Card onClick={() => view(a, 'a')} style={{ width: '18rem' }}>
                 <Card.Body>
                     <Card.Title>
                         {active[i][1]}
                     </Card.Title>
+                    <div>
+                        <Button disabled size="sm" variant="secondary">{active[i][2][0]}</Button>
+                        <Button disabled size="sm" variant="secondary">{active[i][2][1]}</Button>
+                    </div>
                     <small className="mb-2 text-muted">
-                        Created: {active[i][2].replace('GMT', '')}
-                        <br />
+                        {/* Created: {active[i][2].replace('GMT', '')}
+                        <br /> */}
                         Expires: {active[i][3].replace('GMT', '')}
                     </small>
                 </Card.Body>
             </Card>
         );
     }
-    ecard = Array();
+    ecard = [];
     for (var i in expired) {
+        let a = i;
         ecard.push(
-            <Card onClick={() => console.log('noice')} style={{ width: '18rem' }}>
+            <Card onClick={() => view(a, 'e')} style={{ width: '18rem' }}>
                 <Card.Body>
                     <Card.Title>
                         {expired[i][1]}
                     </Card.Title>
                     <small className="mb-2 text-muted">
-                        Created: {expired[i][2].replace('GMT', '')}
-                        <br />
+                        {/* Created: {expired[i][2].replace('GMT', '')}
+                        <br /> */}
                         Expired: {expired[i][3].replace('GMT', '')}
                     </small>
                 </Card.Body>
@@ -61,7 +98,27 @@ function User() {
     }
     return (
         <Container>
-            <Nav variant="tabs" defaultActiveKey="/home">
+            <Modal show={showModal} onHide={() => setShowModal(false)}>
+                <Modal.Header closeButton>
+                    <Modal.Title>{data['qn']}</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    Link: <Link to={"/"+id}>{data['link']}</Link>
+                    <br />
+                    Total votes: {data['one'] + data['two']}
+                    <br />
+                    <Button disabled size="sm" className="mb-2" variant="secondary">{data['opts']? data['opts'][0] : null}</Button>: {data['one']}
+                    <br />
+                    <Button disabled size="sm" className="mb-2" variant="secondary">{data['opts']? data['opts'][1] : null}</Button>: {data['two']}
+                    <div>
+                    <ProgressBar max={data['one'] + data['two']}>
+                        <ProgressBar max={data['one'] + data['two']} variant="success" now={data['one']} key={1} label={data['opts']? data['opts'][0]:null} />
+                        <ProgressBar max={data['one'] + data['two']} variant="danger" now={data['two']} key={2} label={data['opts']? data['opts'][1]:null} />
+                    </ProgressBar>
+                    </div>
+                </Modal.Body>
+            </Modal>
+            <Nav variant="tabs">
                 <Nav.Item>
                     <Nav.Link onClick={() => setTab(true)}>Active</Nav.Link>
                 </Nav.Item>
@@ -70,7 +127,7 @@ function User() {
                 </Nav.Item>
             </Nav>
             <CardGroup>
-            {tab ? acard : ecard}
+                {tab ? acard : ecard}
             </CardGroup>
         </Container>
     )
