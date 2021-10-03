@@ -17,8 +17,8 @@ function Login() {
         e.preventDefault()
         setMessage('');
         let opts = {
-            'username': username,
-            'password': password
+            username,
+            password
         }
         fetch('https://polls-anon.herokuapp.com/api/login/', {
             method: 'POST',
@@ -30,8 +30,7 @@ function Login() {
             .then(token => {
                 if (token.access_token) {
                     login(token)
-                }
-                else {
+                } else {
                     setMessage('Invalid credentials. Please try again.')
                 }
             })
