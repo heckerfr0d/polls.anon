@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { login, useAuth, logout } from "./auth";
+import { login, useAuth, logout } from "../utils/auth";
 import Container from "react-bootstrap/Container"
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
