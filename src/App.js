@@ -14,6 +14,8 @@ import NavBar from './components/NavBar'
 import './App.css';
 
 function App() {
+  const URL = process.env.REACT_APP_TEST_ENV ? "http://localhost:5000" : "https://polls-anon.herokuapp.com"
+  const URL2 = process.env.REACT_APP_TEST_ENV ? "http://localhost:3000" : "https://polls-anon.netlify.app"
   const [logged] = useAuth();
   const [showLogin, setShowLogin] = React.useState(false);
   const [create, showCreate] = React.useState(false);
@@ -24,13 +26,13 @@ function App() {
         <Switch>
           <Route exact path="/">
             {logged ? 
-              create ? <Create/> : <User/>
+              create ? <Create URL={URL}/> : <User URL={URL} URL2={URL2}/>
             :
-              showLogin ? <Login /> : <Register />
+              showLogin ? <Login URL={URL} /> : <Register URL={URL} />
             }
           </Route>
           <Route path="/:id">
-            <Vote />
+            <Vote URL={URL} />
           </Route>
         </Switch>
     </Container>

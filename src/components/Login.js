@@ -7,7 +7,7 @@ import Card from "react-bootstrap/Card";
 import Alert from "react-bootstrap/Alert";
 
 
-function Login() {
+function Login({URL}) {
     const [logged] = useAuth();
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
@@ -20,7 +20,7 @@ function Login() {
             'username': username,
             'password': password
         }
-        fetch('https://polls-anon.herokuapp.com/api/login/', {
+        fetch(`${URL}/api/login/`, {
             method: 'POST',
             headers: new Headers({
                 'Content-Type': 'application/json'

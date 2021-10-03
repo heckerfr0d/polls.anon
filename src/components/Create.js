@@ -3,8 +3,8 @@ import { Container, Form, Button, Row, Col, Card, Modal } from 'react-bootstrap'
 import { Link } from 'react-router-dom';
 import { authFetch } from "../utils/auth"
 
-function Create() {
-  const [expiry, onChange] = useState('');
+function Create({URL}) {
+  const [expiry, onChange] = useState(`${new Date().toISOString().split('T')[0]} ${("0" + new Date().getHours()).slice(-2)}:${("0" + new Date().getMinutes()).slice(-2)}`);
   // const [title, onTitleChange] = useState('');
   const [questions, setQuestions] = useState('');
   const [opt1, setOpt1] = useState('');
@@ -13,7 +13,7 @@ function Create() {
   const [id, setId] = useState('');
   const qn = (i) => {
     return (
-      <Row xs={1} md={1} className="g-3">
+      <Row key={i} xs={1} md={1} className="g-3">
         <Card>
           <Card.Body>
             <Form.Group className="mb-2">
@@ -34,7 +34,7 @@ function Create() {
       'opts': [opt1, opt2],
       'expire': expiry
     }
-    authFetch("https://polls-anon.herokuapp.com/api/create/", {
+    authFetch(`${URL}/api/create/`, {
       method: 'POST',
             headers: new Headers({
                 'Content-Type': 'application/json'
@@ -58,6 +58,7 @@ function Create() {
         <Modal.Header closeButton>
           <Modal.Title>Poll Created!</Modal.Title>
         </Modal.Header>
+        {console.log(expiry)}
         <Modal.Body>Here's your link: <Link to={"/"+id}>https://polls-anon.netlify.app/{id}/</Link></Modal.Body>
       </Modal>
       <Form>

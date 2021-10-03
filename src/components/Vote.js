@@ -3,14 +3,14 @@ import React, { useEffect, useState } from 'react';
 import { Redirect, useParams } from 'react-router-dom';
 
 
-function Vote() {
+function Vote({URL}) {
     const [qn, setQn] = useState('');
     const [opts, setOpts] = useState([]);
     const [expire, setExpire] = useState('');
     const[done, setDone] = useState(false);
     const {id} = useParams();
     useEffect(() => {
-        fetch("https://polls-anon.herokuapp.com/api/poll/" + id + "/").then(response => {
+        fetch(`${URL}/api/poll/` + id + "/").then(response => {
             return response.json()
         }).then(response => {
             if (response && response.id) {
@@ -25,7 +25,7 @@ function Vote() {
         })
     }, [])
     const vote = (i) => {
-        fetch("https://polls-anon.herokuapp.com/api/vote/" + id + "/" + i + "/").then(response => {
+        fetch(`${URL}/api/vote/` + id + "/" + i + "/").then(response => {
             if (response.status === 200) {
                 alert("Vote recorded!");
                 setDone(true);
