@@ -58,7 +58,6 @@ function Create({URL}) {
         <Modal.Header closeButton>
           <Modal.Title>Poll Created!</Modal.Title>
         </Modal.Header>
-        {console.log(expiry)}
         <Modal.Body>Here's your link: <Link to={"/"+id}>https://polls-anon.netlify.app/{id}/</Link></Modal.Body>
       </Modal>
       <Form>
