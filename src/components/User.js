@@ -6,7 +6,7 @@ import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import { Link } from "react-router-dom";
-import { authFetch } from "./auth"
+import { authFetch } from "../utils/auth"
 import CardGroup from "react-bootstrap/CardGroup";
 
 function User() {
@@ -60,7 +60,7 @@ function User() {
     for (var i in active) {
         let a = i;
         acard.push(
-            <Card onClick={() => view(a, 'a')} style={{ width: '18rem' }}>
+            <Card key={active[i]+active[i][1]} onClick={() => view(a, 'a')} style={{ width: '18rem' }}>
                 <Card.Body>
                     <Card.Title>
                         {active[i][1]}
@@ -82,15 +82,16 @@ function User() {
     for (var i in expired) {
         let a = i;
         ecard.push(
-            <Card onClick={() => view(a, 'e')} style={{ width: '18rem' }}>
+            <Card key={expired[i]+expired[i][1]} onClick={() => view(a, 'e')} style={{ width: '18rem' }}>
                 <Card.Body>
                     <Card.Title>
                         {expired[i][1]}
                     </Card.Title>
                     <small className="mb-2 text-muted">
-                        {/* Created: {expired[i][2].replace('GMT', '')}
+                    {/* {console.log(expired)}
+                        Created: {new Date(expired[i][2]).toLocaleString()}
                         <br /> */}
-                        Expired: {expired[i][3].replace('GMT', '')}
+                        Expired: {new Date(expired[i][3]).toLocaleString()}
                     </small>
                 </Card.Body>
             </Card>

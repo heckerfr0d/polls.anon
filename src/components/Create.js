@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Container, Form, Button, Row, Col, Card, Modal } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
-import { authFetch } from "./auth"
+import { authFetch } from "../utils/auth"
 
 function Create() {
   const [expiry, onChange] = useState('');
