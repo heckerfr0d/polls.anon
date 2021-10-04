@@ -19,8 +19,8 @@ function Register() {
         if (message)
             return;
         let opts = {
-            'username': username,
-            'password': password
+            username,
+            password
         }
         fetch('https://polls-anon.herokuapp.com/api/register/', {
             method: 'POST',
