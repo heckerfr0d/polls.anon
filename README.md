@@ -17,7 +17,9 @@
    npm install
    ```
 
-4. Run frontend and backend
+4. Rename .env.example to .env for local usage
+
+5. Run frontend and backend
 
    ```bash
    flask run

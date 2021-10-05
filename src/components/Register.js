@@ -6,13 +6,13 @@ import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 import Alert from "react-bootstrap/Alert";
 
-function Register() {
+function Register({URL}) {
     const [logged] = useAuth();
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
     const [password2, setPassword2] = useState('')
     const [message, setMessage] = useState('')
-
+    {console.log(URL)}
 
     const onSubmitClick = (e) => {
         e.preventDefault()
@@ -22,7 +22,7 @@ function Register() {
             username,
             password
         }
-        fetch('https://polls-anon.herokuapp.com/api/register/', {
+        fetch(`${URL}/api/register/`, {
             method: 'POST',
             headers: new Headers({
                 'Content-Type': 'application/json'

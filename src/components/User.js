@@ -9,7 +9,7 @@ import { Link } from "react-router-dom";
 import { authFetch } from "../utils/auth"
 import CardGroup from "react-bootstrap/CardGroup";
 
-function User() {
+function User({URL, URL2}) {
     const [id, setId] = useState('')
     const [active, setActive] = useState([])
     const [expired, setExpired] = useState([])
@@ -18,7 +18,7 @@ function User() {
     const [showModal, setShowModal] = useState(false)
     let acard, ecard;
     useEffect(() => {
-        authFetch("https://polls-anon.herokuapp.com/api/polls/").then(response => {
+        authFetch(`${URL}/api/polls/`).then(response => {
             if (response.status === 401) {
                 return null;
             }
@@ -37,7 +37,7 @@ function User() {
             setId(expired[i][0]);
         else
             setId(active[i][0]);
-        authFetch("https://polls-anon.herokuapp.com/api/view/" + id + "/").then(response => {
+        authFetch(`${URL}/api/view/` + id + "/").then(response => {
             if (response.status === 401) {
                 return null;
             }
@@ -46,7 +46,7 @@ function User() {
             if (response && response.qn) {
                 setData(
                     {
-                        'link': "https://polls-anon.netlify.app/"+id+"/",
+                        'link': `${URL2}`+id+"/",
                         'qn': response.qn,
                         'opts': response.opts,
                         'one': response.one,
@@ -72,7 +72,7 @@ function User() {
                     <small className="mb-2 text-muted">
                         {/* Created: {active[i][2].replace('GMT', '')}
                         <br /> */}
-                        Expires: {active[i][3].replace('GMT', '')}
+                        Expires: {new Date(active[i][3]).toLocaleString()}
                     </small>
                 </Card.Body>
             </Card>
